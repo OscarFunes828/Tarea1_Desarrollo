@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarea1</title>
+    <style>
+        
+        *{
+            margin:0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        body{
+            background-color: rgb(131, 218, 255);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .containerall{
+            background-color: rgb(218, 248, 248);
+            margin: 20px;
+            width: 97%;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info{
+            background: rgb(114, 205, 238);
+            width:97%;
+            height: auto;
+            padding: 40px;
+            margin: 20px;
+            display: grid;
+            row-gap: 20px;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr 1fr 1fr;
+            border-radius: 10px;
+        }
+
+        .info *{
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .info .label-entry-pregunta,.label-entry-respuesta{
+            width: 100%;   
+        }
+
+        .label-pregunta,.label-entry-pregunta,.label-respuesta,.label-entry-respuesta,.elegirid,.button-eliminar{
+            padding: 10px;
+        }
+        
+        .label-entry-pregunta input, .label-entry-respuesta input{
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .label-entry-pregunta input:focus, .label-entry-respuesta input:focus{
+            outline: none;
+            border-color: #263edd;
+        }
+
+        .elegirid input{
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 240px;
+        }
+
+        button{
+            padding: 15px;
+            background-color: #4bb8ef;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover{
+            background: linear-gradient(45deg, #f53008, #f62ae2);
+        }
+
+        .button-eliminar button{
+            background-color: #0fbcf1;
+        }
+
+        .button-eliminar button:hover{
+            background: linear-gradient(45deg, #f53008, #f62ae2);
+        }
+
+        .flashcards{
+            background: linear-gradient(45deg, #01d1d8, #5f20f3);
+            min-height: 40vh;
+            width: 97%;
+            margin: 0px 20px 20px 20px;
+            padding: 40px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .flashcard{   
+            perspective: 1000px;
+            height: 200px;
+            position: relative;
+        }
+
+        .flashcard-inner{
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: all 1.0s ease-in-out;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped .flashcard-inner{
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid #ddd;
+        }
+
+        .flashcard-front{
+            background: linear-gradient(45deg, #01add8, #860f91);
+            color: white;
+        }
+
+        .flashcard-back{
+            background: linear-gradient(45deg, #0e2afd, #04baf2);
+            color: white;
+            transform: rotateY(180deg) scale(1.05);
+        }
+
+        .flashcard-number{
+            position: absolute;
+            top: 10px;
+            right: 45%;
+            background-color: rgba(0,0,0,0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .flashcard-content{
+            font-size: 16px;
+            line-height: 1.4;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .flashcard-label{
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .no-cards{
+            text-align: center;
+            color: whitesmoke;
+            font-size: 18px;
+            margin-top: 50px;
+        }
+
+        .stats{
+            background-color: rgb(218, 248, 248);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .info{
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .info *{
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .flashcards{
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>📚 Ingresa Tarjetas de Flashcards</h1>
+    <div class="containerall">
+        
+        <div class="info">
+            <div class="info-pregunta">
+                <div class="label-pregunta">Ingresa Tu Pregunta:</div>
+                <div class="label-entry-pregunta"><input type="text" id="preguntaInput" placeholder="PREGUNTA AQUI"></div>
+            </div>
+            <div class="info-respuesta">
+                <div class="label-respuesta">Ingresa La Respuesta: </div>
+                <div class="label-entry-respuesta"><input type="text" id="respuestaInput" placeholder="RESPUESTA AQUI"> </div>
+            </div>
+            <div class="eliminacion">
+                <div class="elegirid"><input type="number" id="eliminarInput" placeholder="Numero Flashcard A Eliminar" min="1"></div>
+                <div class="button-eliminar"><button type="button" >ELIMINAR</button></div>
+            </div>
+            <div class="button-registrar"><button type="button" >INGRESAR</button></div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;">
+            Flashcards Ingresadas: <span id="totalCards">0</span>
+        </div>
+
+        <div class="flashcards" id="flashcardsContainer">
+            
+        
+        </div>
+    </div>
+
+    <script>
+        let flashcards = [];
+        let contadorId = 1;
+
+        const eliminarflash = document.querySelector(".button-eliminar");
+        const registrarflash = document.querySelector(".button-registrar");
+
+        registrarflash.addEventListener("click", agregarFlashcard);
+        eliminarflash.addEventListener("click", eliminarFlashcard); 
+
+        function agregarFlashcard() {
+            const preguntaInput = document.getElementById('preguntaInput');
+            const respuestaInput = document.getElementById('respuestaInput'); 
+            
+            const pregunta = preguntaInput.value.trim();
+            const respuesta = respuestaInput.value.trim(); 
+            
+            if (!pregunta || !respuesta) {
+                alert('Llena los espacio vacíos'); 
+            }
+            
+            const nuevaFlashcard = {   
+                id: contadorId,
+                pregunta: pregunta,
+                respuesta: respuesta
+            };
+            
+            flashcards.push(nuevaFlashcard);  
+            contadorId++;
+            
+            
+            preguntaInput.value = '';  
+            respuestaInput.value = '';
+            
+            
+            mostrarFlashcards();  
+            actualizarStats();
+        }
+
+        function eliminarFlashcard() {
+            const numeroEliminar = parseInt(document.getElementById('eliminarInput').value); 
+            
+            if (numeroEliminar < 1||!numeroEliminar) {  
+                alert('Numero Invalido De Flashcard.');
+                return;
+            }
+            
+            const index = flashcards.findIndex(card =>card.id === numeroEliminar);  
+            
+            if (index === -1) {  
+                alert('No se encontró una flashcard con ese número.');
+                return;
+            }
+            
+            if (confirm(`¿Eliminar la tarjeta #${numeroEliminar}?`)) { 
+                flashcards.splice(index, 1);  
+                eliminarInput.value = ''; 
+                mostrarFlashcards();  
+                actualizarStats();
+            }
+        }
+
+        function voltearFlashcard(id) {  
+            const flashcard = document.querySelector(`[data-id="${id}"]`);
+            flashcard.classList.toggle('flipped');
+        }
+
+        function mostrarFlashcards() {  
+            const container = document.getElementById('flashcardsContainer');
+            
+            if (flashcards.length === 0) { 
+                container.innerHTML = '<div class="no-cards"> Aún no has ingresado Flashcards</div>';
+                return;
+            }
+            
+            container.innerHTML = ''; 
+
+            flashcards.forEach(card => { 
+                const flashcardDiv = document.createElement('div'); 
+                flashcardDiv.className = 'flashcard'; 
+                flashcardDiv.dataset.id = card.id; 
+                flashcardDiv.onclick = () => voltearFlashcard(card.id);  
+                
+                flashcardDiv.innerHTML = ` 
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="flashcard-number">#${card.id}</div>
+                            <div class="flashcard-label">Pregunta</div>
+                            <div class="flashcard-content">${card.pregunta}</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="flashcard-number">#${card.id}</div>
+                            <div class="flashcard-label">Respuesta</div>
+                            <div class="flashcard-content">${card.respuesta}</div>
+                        </div>
+                    </div>
+                `; 
+                
+                container.append(flashcardDiv);  
+            });
+        }
+
+        function actualizarStats() {
+            const statsDiv = document.getElementById('stats');
+            const totalCards = document.getElementById('totalCards'); 
+            
+            if (flashcards.length > 0) {
+                statsDiv.style.display = 'block'; 
+                totalCards.textContent = flashcards.length; 
+            } else {
+                statsDiv.style.display = 'none'; 
+            }
+        }
+
+        document.getElementById('preguntaInput')
+        preguntaInput.addEventListener('keypress', function(e) { 
+            if (e.key === 'Enter') {
+                document.getElementById('respuestaInput').focus();
+            }
+        });
+
+        document.getElementById('respuestaInput')
+        respuestaInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                agregarFlashcard();
+            }
+        });
+
+        document.getElementById('eliminarInput')
+        eliminarInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                eliminarFlashcard();
+            }
+        });
+        mostrarFlashcards(); 
+    </script>
+</body>
+</html>
